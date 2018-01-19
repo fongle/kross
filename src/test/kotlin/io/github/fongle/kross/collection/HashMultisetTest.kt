@@ -1,5 +1,8 @@
 package io.github.fongle.kross.collection
 
+import io.github.fongle.kross.collection.multiset.HashMultiset
+import io.github.fongle.kross.collection.multiset.emptyMultiset
+import io.github.fongle.kross.collection.multiset.multisetOf
 import org.junit.Test
 
 class HashMultisetTest {
@@ -230,6 +233,26 @@ class HashMultisetTest {
         add("b")
         retainAll(listOf("b"))
         toList() shouldBe listOf("b")
+    }
+
+    @Test
+    fun `should combine two multisets`() {
+        multisetOf("a", "a") + multisetOf("a", "b") shouldBe multisetOf("a", "a", "a", "b")
+    }
+
+    @Test
+    fun `adding an empty multiset should return an equal multiset`() {
+        multisetOf("a") + emptyMultiset() shouldBe multisetOf("a")
+    }
+
+    @Test
+    fun `should subtract one multiset from another`() {
+        multisetOf("a", "a", "b") - multisetOf("a") shouldBe multisetOf("a", "b")
+    }
+
+    @Test
+    fun `subtracting an empty multiset should return an equal multiset`() {
+        multisetOf("a") - emptyMultiset() shouldBe multisetOf("a")
     }
 
     private fun newMultiset() = HashMultiset<String>()

@@ -3,6 +3,7 @@ package io.github.fongle.kross.collection
 import io.github.fongle.kross.collection.multiset.HashMultiset
 import io.github.fongle.kross.collection.multiset.emptyMultiset
 import io.github.fongle.kross.collection.multiset.multisetOf
+import io.github.fongle.kross.collection.multiset.toMultiset
 import org.junit.Test
 
 class HashMultisetTest {
@@ -143,7 +144,7 @@ class HashMultisetTest {
     @Test
     fun `constructor should copy a multiset`() = with(newMultiset()) {
         add("test")
-        HashMultiset(this).asMap() shouldBe this.asMap()
+        this.toMultiset() shouldBe this
     }
 
     @Test

@@ -2,7 +2,6 @@ package io.github.fongle.kross.collection.multimap
 
 import io.github.fongle.kross.collection.and
 import io.github.fongle.kross.collection.shouldBe
-import io.github.fongle.kross.collection.then
 import org.junit.Test
 
 class HashMultimapTest {
@@ -18,7 +17,8 @@ class HashMultimapTest {
 
     @Test
     fun `size should be zero after adding and removing a key`() = with(newMultimap()) {
-        put("test", "value") then remove("test", "value")
+        put("test", "value")
+        remove("test", "value")
         size shouldBe 0
     }
 
@@ -41,7 +41,8 @@ class HashMultimapTest {
 
     @Test
     fun `size should be zero after clearing the multimap`() = with(newMultimap()) {
-        put("test", "value") then clear()
+        put("test", "value")
+        clear()
         size shouldBe 0
     }
 
@@ -66,24 +67,26 @@ class HashMultimapTest {
 
     @Test
     fun `fetching a key that is not present should return an empty collection`() = with(newMultimap()) {
-        get("test").toSet() shouldBe emptySet<String>()
+        get("test") shouldBe emptySet<String>()
     }
 
     @Test
     fun `fetching a key that has one value should return a singleton set`() = with(newMultimap()) {
         put("test", "value")
-        get("test").toSet() shouldBe setOf("value")
+        get("test") shouldBe setOf("value")
     }
 
     @Test
     fun `fetching a key with multiple values should return a set of values`() = with(newMultimap()) {
-        put("test", "value") then put("test", "value-2")
-        get("test").toSet() shouldBe setOf("value", "value-2")
+        put("test", "value-2")
+        put("test", "value")
+        get("test") shouldBe setOf("value", "value-2")
     }
 
     @Test
     fun `remove should return the previous values for a key`() = with(newMultimap()) {
-        put("test", "value-1") then put("test", "value-2")
+        put("test", "value-2")
+        put("test", "value-1")
         remove("test") shouldBe setOf("value-1", "value-2")
     }
 
@@ -153,20 +156,23 @@ class HashMultimapTest {
 
     @Test
     fun `key set and value set should have equality check`() = with(newMultimap()) {
-        put("key", "value") then put("value", "key")
+        put("value", "key")
+        put("key", "value")
         keys shouldBe values.toSet()
     }
 
     @Test
     fun `adding a key-value pair should be idempotent`() = with(newMultimap()) {
-        put("key", "value") then put("key", "value")
-        size shouldBe 1 and get("key").toSet() shouldBe setOf("value")
+        put("key", "value")
+        put("key", "value")
+        size shouldBe 1 and get("key") shouldBe setOf("value")
     }
 
     @Test
     fun `adding a key-value pair with putAll should be idempotent`() = with(newMultimap()) {
-        put("key", "value") then putAll("key", setOf("value"))
-        size shouldBe 1 and get("key").toSet() shouldBe setOf("value")
+        putAll("key", setOf("value"))
+        put("key", "value")
+        size shouldBe 1 and get("key") shouldBe setOf("value")
     }
 
     @Test
@@ -177,33 +183,30 @@ class HashMultimapTest {
 
     @Test
     fun `removing an entry via the entry set should be reflected in the map`() = with(newMultimap()) {
-        put("key", "value") then entries.remove(mapOf("key" to "value").entries.single())
+        put("key", "value")
+        entries.remove(mapOf("key" to "value").entries.single())
         contains("key", "value") shouldBe false and isEmpty() shouldBe true
     }
 
     @Test
     fun `map should be empty after entry set is cleared`() = with(newMultimap()) {
-        put("key", "value") then entries.clear()
+        put("key", "value")
+        entries.clear()
         isEmpty() shouldBe true
     }
 
     @Test
     fun `multiple entries should be removed from entry set using removeAll`() = with(newMultimap()) {
-        put("key" ,"value") then put("key", "value-2")
+        put("key", "value-2")
+        put("key" ,"value")
         entries.removeAll(entries.toList())
         isEmpty() shouldBe true
     }
 
     @Test
-    fun `modifying a value via an entry should be reflected in the map`() = with(newMultimap()) {
-        put("key", "value")
-        val entry = entries.single()
-    }
-
-    @Test
     fun `adding a value via a value collection should be reflected in the map`()  = with(newMultimap()) {
         get("key").add("value")
-        get("key").toSet() shouldBe setOf("value")
+        get("key") shouldBe setOf("value")
     }
 
     @Test
@@ -213,5 +216,5 @@ class HashMultimapTest {
         isEmpty() shouldBe true
     }
 
-    private fun newMultimap() = HashMultimap<String, String>()
+    private fun newMultimap() = mutableSetMultimapOf<String, String>()
 }
